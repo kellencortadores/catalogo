@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catálogo de Moldes & Peças</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2NCcgaGVpZ2h0PSc2NCc+CjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyNjYzAwMDAnLz4KPHRleHQgeD0nNTAlJyB5PSc1NSUnIGZvbnQtc2l6ZT0nNDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZpbGw9J3doaXRlJyBmb250LWZhbWlseT0nQXJpYWwnPkk8L3RleHQ+Cjwvc3ZnPg==">
+<style>
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+body { font-family: Arial, Helvetica, sans-serif; background: #f2f2f2; margin: 0; padding: 16px 16px 40px 16px; color: #333; }
+header { text-align: center; margin-bottom: 20px; }
+h1 { color: #cc0000; margin: 8px 0 6px; font-size: 26px; }
+p.subtitulo { margin: 0; color: #666; font-size: 15px; }
+
+.container-busca { max-width: 600px; margin: 0 auto 20px auto; }
+.campo-busca { width: 100%; padding: 12px 16px; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; }
+.card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; border: 2px solid transparent; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-color: #cc0000; }
+.card-img { width: 100%; height: 160px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 48px; }
+.card-img img { width: 100%; height: 100%; object-fit: cover; }
+.card-corpo { padding: 14px; display: flex; flex-direction: column; flex-grow: 1; }
+.card-titulo { font-size: 18px; font-weight: bold; color: #111; margin-bottom: 6px; }
+.card-desc { font-size: 14px; color: #666; line-height: 1.3; flex-grow: 1; margin-bottom: 12px; }
+.btn-abrir { background: #cc0000; color: #fff; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+
+footer { text-align: center; margin-top: 40px; color: #777; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Catálogo de Temas</h1>
+  <p class="subtitulo">Escolha uma categoria abaixo para ver os modelos disponíveis</p>
+</header>
+
+<div class="container-busca">
+  <input type="text" id="busca" class="campo-busca" placeholder="🔍 Pesquisar tema ou categoria..." oninput="filtrar()">
+</div>
+
+<main class="grid" id="grid-temas">
+
+  <!-- CARD 1: Papai Noel -->
+  <a href="papai_noel.html" class="card" data-nome="papai noel natal xicara mamae noel">
+    <div class="card-img">🎅</div>
+    <div class="card-corpo">
+      <div class="card-titulo">Papai Noel</div>
+      <div class="card-desc">Modelos de Papai Noel borda de xícara, peças decorativas e Mamãe Noel.</div>
+      <div class="btn-abrir">Ver Modelos</div>
+    </div>
+  </a>
+
+  <!-- CARD 2: Exemplo de Outro Tema (Personalize como quiser) -->
+  <a href="#" class="card" data-nome="boneco de neve natal inverno">
+    <div class="card-img">☃️</div>
+    <div class="card-corpo">
+      <div class="card-titulo">Boneco de Neve</div>
+      <div class="card-desc">Coleção especial de enfeites e lembrancinhas de bonecos de neve.</div>
+      <div class="btn-abrir">Ver Modelos</div>
+    </div>
+  </a>
+
+  <!-- CARD 3: Exemplo de Outro Tema -->
+  <a href="#" class="card" data-nome="renas arvore de natal guirlandas">
+    <div class="card-img">🦌</div>
+    <div class="card-corpo">
+      <div class="card-titulo">Renas & Enfeites</div>
+      <div class="card-desc">Renas articuladas, guirlandas e acessórios para árvore de Natal.</div>
+      <div class="btn-abrir">Ver Modelos</div>
+    </div>
+  </a>
+
+</main>
+
+<footer>
+  <p>© Catálogo de Moldes - Todos os direitos reservados</p>
+</footer>
+
+<script>
+function filtrar() {
+  const termo = document.getElementById("busca").value.toLowerCase();
+  const cards = document.querySelectorAll(".card");
+  
+  cards.forEach(card => {
+    const nome = card.dataset.nome.toLowerCase();
+    const titulo = card.querySelector(".card-titulo").textContent.toLowerCase();
+    if (nome.indexOf(termo) >= 0 || titulo.indexOf(termo) >= 0) {
+      card.style.display = "flex";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+</script>
+
+</body>
+</html>
