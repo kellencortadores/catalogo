@@ -36,6 +36,10 @@ CATALOG_FILE = "catalog.json"
 MAIN_NAME = "index-main.html"
 INDEX_PATTERN = "index-{slug}.html"   # troque para "index.html" se preferir
 ASSETS = "_capas"
+# Endereço público do catálogo (com / no final). Serve para a prévia no WhatsApp.
+# Se deixar vazio, as páginas saem sem a prévia com imagem.
+SITE_URL = "https://kellencortadores.github.io/catalogo/"
+SHARE_NAME = "compartilhar"   # imagem gerada para a prévia (ex.: compartilhar.jpg)
 MARK_A, MARK_B = "<!--VOLTAR-MAIN-->", "<!--/VOLTAR-MAIN-->"
 IMG_TYPES = [("Imagens", "*.png *.jpg *.jpeg *.webp *.gif"), ("Todos", "*.*")]
 
@@ -103,6 +107,89 @@ def copy_asset(src, dest_dir, new_stem):
     if Path(src).resolve() != dest.resolve():
         shutil.copy2(src, dest)
     return dest
+
+
+def make_share_image(src, dest_dir, bg_hex, banner=False, name=None):
+    """Cria compartilhar.jpg (1200x630). src = caminho ou bytes.
+    banner=True: a imagem ocupa a largura toda e as sobras de cima e de baixo
+    são completadas esticando a borda da própria imagem."""
+    import io
+    dest_dir = Path(dest_dir)
+    try:
+        from PIL import Image
+        with Image.open(io.BytesIO(src) if isinstance(src, bytes) else src) as im:
+            im = im.convert("RGBA")
+            if banner:
+                im = im.resize((1200, max(1, round(im.height * 1200 / im.width))))
+                if im.height > 630:
+                    top = (im.height - 630) // 2
+                    im = im.crop((0, top, 1200, top + 630))
+                base = Image.new("RGBA", im.size, "white")
+                base.alpha_composite(im)
+                im = base.convert("RGB")
+                canvas = Image.new("RGB", (1200, 630))
+                y = (630 - im.height) // 2
+                if y > 0:
+                    canvas.paste(im.crop((0, 0, 1200, 1)).resize((1200, y)), (0, 0))
+                    canvas.paste(im.crop((0, im.height - 1, 1200, im.height)).resize((1200, 630 - y - im.height)), (0, y + im.height))
+                canvas.paste(im, (0, y))
+            else:
+                im.thumbnail((1040, 550))
+                canvas = Image.new("RGB", (1200, 630), bg_hex)
+                canvas.paste(im, ((1200 - im.width) // 2, (630 - im.height) // 2), im)
+            dest = dest_dir / ((name or SHARE_NAME) + ".jpg")
+            canvas.save(dest, "JPEG", quality=85)
+            return dest
+    except Exception:
+        pass
+    try:   # sem Pillow: usa a imagem original
+        if isinstance(src, bytes):
+            dest = dest_dir / ((name or SHARE_NAME) + ".png")
+            dest.write_bytes(src)
+        else:
+            dest = dest_dir / ((name or SHARE_NAME) + Path(src).suffix.lower())
+            shutil.copy2(src, dest)
+        return dest
+    except Exception:
+        return None
+
+
+_URI_CACHE = {}
+
+
+def data_uri(path, max_side=420):
+    """Imagem embutida no HTML (base64). Reduz o tamanho se o Pillow estiver instalado."""
+    path = Path(path)
+    try:
+        key = (str(path), path.stat().st_mtime)
+    except OSError:
+        return ""
+    if key in _URI_CACHE:
+        return _URI_CACHE[key]
+    mime, raw = None, None
+    try:
+        from PIL import Image
+        import io
+        with Image.open(path) as im:
+            im.thumbnail((max_side, max_side))
+            buf = io.BytesIO()
+            if im.mode in ("RGBA", "LA", "P"):
+                im.convert("RGBA").save(buf, "WEBP", quality=85)
+            else:
+                im.convert("RGB").save(buf, "WEBP", quality=85)
+            mime, raw = "image/webp", buf.getvalue()
+    except Exception:
+        pass
+    if raw is None:
+        ext = path.suffix.lower().lstrip(".")
+        mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "svg": "image/svg+xml"}.get(ext, "image/" + (ext or "png"))
+        try:
+            raw = path.read_bytes()
+        except OSError:
+            return ""
+    uri = "data:%s;base64,%s" % (mime, base64.b64encode(raw).decode("ascii"))
+    _URI_CACHE[key] = uri
+    return uri
 
 
 # ------------------------------------------------------------------- HTML
@@ -411,8 +498,17 @@ def build_deco(pal):
 
 
 def build_page(title, subtitle, logo_url, cards, back_url, placeholder, count_word,
-               pal=None):
+               pal=None, og=None):
     pal = pal or DEFAULT_PAL
+    og_tags = ""
+    if og:
+        og_tags = (
+            '<meta property="og:type" content="website">'
+            f'<meta property="og:title" content="{escape(og["title"], True)}">'
+            f'<meta property="og:description" content="{escape(og["desc"], True)}">'
+            f'<meta property="og:url" content="{escape(og["url"], True)}">'
+            + (f'<meta property="og:image" content="{escape(og["image"], True)}">'
+               '<meta name="twitter:card" content="summary_large_image">' if og.get("image") else ""))
     items = []
     for ctitle, csub, img_url, href in cards:
         img = (f'<img src="{img_url}" alt="{escape(ctitle)}">' if img_url
@@ -427,7 +523,7 @@ def build_page(title, subtitle, logo_url, cards, back_url, placeholder, count_wo
     return f"""<!DOCTYPE html>
 <html lang="pt-br"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{escape(title)}</title><style>{css_vars(pal)}{CSS}</style></head><body>
+<title>{escape(title)}</title>{og_tags}<style>{css_vars(pal)}{CSS}</style></head><body>
 {back}
 <header>{build_deco(pal)}<div class="hin">{logo}<h1>{escape(title)}</h1><p class="sub">{escape(subtitle)}</p></div></header>
 <input id="q" class="search" type="search" placeholder="🔍 {escape(placeholder)}">
@@ -454,6 +550,33 @@ def inject_back_button(html_file, main_href, index_href, theme_name, pal=None):
     Path(html_file).write_text(txt, encoding=enc)
 
 
+OG_A, OG_B = "<!--OG-PREVIA-->", "<!--/OG-PREVIA-->"
+
+
+def inject_og(html_file, og):
+    """Coloca as meta tags de prévia (WhatsApp etc.) no <head> da subpágina."""
+    txt, enc = read_text(html_file)
+    txt = re.sub(re.escape(OG_A) + r".*?" + re.escape(OG_B), "", txt, flags=re.S)
+    # remove og:/twitter: antigas (evita duplicidade/conflito)
+    txt = re.sub(r"<meta[^>]+(?:property|name)=[\"']?(?:og:|twitter:)[^>]*>\s*", "", txt, flags=re.I)
+    tags = (f'{OG_A}<meta property="og:type" content="website">'
+            f'<meta property="og:title" content="{escape(og["title"], True)}">'
+            f'<meta property="og:description" content="{escape(og["desc"], True)}">'
+            f'<meta property="og:url" content="{escape(og["url"], True)}">'
+            + (f'<meta property="og:image" content="{escape(og["image"], True)}">'
+               '<meta property="og:image:width" content="1200">'
+               '<meta property="og:image:height" content="630">'
+               '<meta name="twitter:card" content="summary_large_image">' if og.get("image") else "")
+            + OG_B)
+    m = re.search(r"</head>", txt, re.I)
+    if m:
+        txt = txt[:m.start()] + tags + txt[m.start():]
+    else:
+        m = re.search(r"<body[^>]*>", txt, re.I)
+        txt = (txt[:m.start()] + tags + txt[m.start():]) if m else tags + txt
+    Path(html_file).write_text(txt, encoding=enc)
+
+
 # --------------------------------------------------------------- catálogo
 class Catalog:
     def __init__(self, root):
@@ -469,6 +592,47 @@ class Catalog:
     def save(self):
         self.file.write_text(json.dumps(self.data, ensure_ascii=False, indent=2),
                              encoding="utf-8")
+
+    def logo_uri(self):
+        """Logo embutida: usa a configurada ou a logomarca do próprio programa."""
+        lg = self.abs(self.data.get("logo"))
+        if lg and lg.exists():
+            return data_uri(lg, 300)
+        return "data:image/png;base64," + LOGO_B64
+
+    def og_for(self, folder, rel_url, title, desc, src, bg, banner=False):
+        """Gera compartilhar.jpg em `folder` e devolve os dados da prévia (ou None)."""
+        if not SITE_URL:
+            return None
+        img = make_share_image(src, folder, bg, banner)
+        base = SITE_URL if SITE_URL.endswith("/") else SITE_URL + "/"
+        return {"title": title, "desc": desc, "url": base + rel_url,
+                "image": base + url(self.root, img) if img else ""}
+
+    def og_for_sub(self, t, page, pal):
+        """Prévia da subpágina: imagem própria (<nome>-compartilhar.jpg) ao lado do HTML."""
+        if not SITE_URL:
+            return None
+        title = self.sub_title(t, page)
+        src = self.sub_cover(t, page) or self.logo_src()
+        img = make_share_image(src, page.parent, pal["bg"], False, name=page.stem + "-compartilhar")
+        base = SITE_URL if SITE_URL.endswith("/") else SITE_URL + "/"
+        return {"title": f"{title} - Catálogo Kellen Cortadores",
+                "desc": f"Modelos de cortadores de {title}. Toque para ver!",
+                "url": base + url(self.root, page),
+                "image": base + url(self.root, img) if img else ""}
+
+    def banner_src(self):
+        """Banner próprio para a prévia: coloque 'banner-compartilhar.png' (ou .jpg) na raiz."""
+        for ext in (".png", ".jpg", ".jpeg", ".webp"):
+            p = self.root / ("banner-compartilhar" + ext)
+            if p.exists():
+                return p
+        return None
+
+    def logo_src(self):
+        lg = self.abs(self.data.get("logo"))
+        return lg if lg and lg.exists() else base64.b64decode(LOGO_B64)
 
     def logo_path(self):
         """Logo configurada; se não houver, grava a logomarca embutida em _capas/logo.png."""
@@ -507,39 +671,49 @@ class Catalog:
     def export_theme(self, t, inject=True):
         folder = self.theme_folder(t)
         out = self.index_path(t)
-        logo = self.logo_path()
         pal = match_theme(t["name"])
         cards = []
         pages = scan_subpages(folder)
         for p in pages:
             img = self.sub_cover(t, p)
             cards.append((self.sub_title(t, p), "Ver modelos",
-                          url(folder, img) if img else "", quote(p.name)))
+                          data_uri(img) if img else "", quote(p.name)))
         html = build_page(
             t["name"], "Escolha um tema",
-            url(folder, logo) if logo and logo.exists() else "",
+            self.logo_uri(),
             cards, url(folder, self.root / MAIN_NAME),
-            "Buscar tema...", "temas disponíveis", pal=pal)
+            "Buscar tema...", "temas disponíveis", pal=pal,
+            og=self.og_for(folder, url(self.root, out),
+                           f"{t['name']} - Catálogo Kellen Cortadores",
+                           f"Modelos de cortadores de {t['name']}. Toque para ver!",
+                           (self.abs(t.get("cover")) if t.get("cover") and self.abs(t["cover"]).exists()
+                            else self.logo_src()), pal["bg"]))
         out.write_text(html, encoding="utf-8")
         if inject:
             for p in pages:
                 inject_back_button(p, url(p.parent, self.root / MAIN_NAME),
                                    quote(out.name), t["name"], pal)
+                og = self.og_for_sub(t, p, pal)
+                if og:
+                    inject_og(p, og)
         return out, len(pages)
 
     def export_main(self):
-        logo = self.logo_path()
         cards = []
         for t in self.data["themes"]:
             cover = self.abs(t.get("cover"))
             n = len(scan_subpages(self.theme_folder(t)))
             cards.append((t["name"], f"{n} temas",
-                          url(self.root, cover) if cover and cover.exists() else "",
+                          data_uri(cover) if cover and cover.exists() else "",
                           url(self.root, self.index_path(t))))
         html = build_page(
             "Catálogo Kellen Cortadores", "Escolha um tema",
-            url(self.root, logo) if logo and logo.exists() else "",
-            cards, "", "Buscar tema (ex.: natal...)", "temas disponíveis")
+            self.logo_uri(),
+            cards, "", "Buscar tema (ex.: natal...)", "temas disponíveis",
+            og=self.og_for(self.root, MAIN_NAME, "Catálogo Kellen Cortadores",
+                           "Escolha um tema e veja os modelos de cortadores de biscoito.",
+                           self.banner_src() or self.logo_src(), DEFAULT_PAL["bg"],
+                           banner=bool(self.banner_src())))
         out = self.root / MAIN_NAME
         out.write_text(html, encoding="utf-8")
         return out
