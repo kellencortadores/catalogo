@@ -1,0 +1,208 @@
+{
+ "atualizado": "2026-11-27T16:04:25",
+ "produtos": [
+  {
+   "titulo": "Dia das Mães",
+   "tema": "Dia das Mães",
+   "url": "Dia%20das%20M%C3%A3es/Dia%20das%20M%C3%A3es.html",
+   "imagem": "_capas/produtos/dia-das-maes-dia-das-maes.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Cenouras",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Cenouras.html",
+   "imagem": "_capas/produtos/pascoa-cenouras.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Coelhos",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Coelhos.html",
+   "imagem": "_capas/produtos/pascoa-coelhos.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Jogos e Quadradinhos",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Jogos%20e%20Quadradinhos.html",
+   "imagem": "_capas/produtos/pascoa-jogos-e-quadradinhos.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Kits",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Kits.html",
+   "imagem": "_capas/produtos/pascoa-kits.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Outros",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Outros.html",
+   "imagem": "_capas/produtos/pascoa-outros.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Ovos",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Ovos.html",
+   "imagem": "_capas/produtos/pascoa-ovos.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Paletas e Palitinhos",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Paletas%20e%20Palitinhos.html",
+   "imagem": "_capas/produtos/pascoa-paletas-e-palitinhos.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Pintinhos",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Pintinhos.html",
+   "imagem": "_capas/produtos/pascoa-pintinhos.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Religioso",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Religioso.html",
+   "imagem": "_capas/produtos/pascoa-religioso.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Tags e Frases",
+   "tema": "Páscoa",
+   "url": "P%C3%A1scoa/Tags%20e%20Frases.html",
+   "imagem": "_capas/produtos/pascoa-tags-e-frases.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Arvore de Natal",
+   "tema": "Natal",
+   "url": "Natal/arvore_de_natal.html",
+   "imagem": "_capas/produtos/natal-arvore-de-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Bengala de Natal",
+   "tema": "Natal",
+   "url": "Natal/bengala_de_natal.html",
+   "imagem": "_capas/produtos/natal-bengala-de-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Boneco de Gengibre",
+   "tema": "Natal",
+   "url": "Natal/boneco_de_gengibre.html",
+   "imagem": "_capas/produtos/natal-boneco-de-gengibre.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Boneco de Neve",
+   "tema": "Natal",
+   "url": "Natal/boneco_de_neve.html",
+   "imagem": "_capas/produtos/natal-boneco-de-neve.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Casinha Natal",
+   "tema": "Natal",
+   "url": "Natal/casinha_natal.html",
+   "imagem": "_capas/produtos/natal-casinha-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Casinha Natal 3D",
+   "tema": "Natal",
+   "url": "Natal/casinha_natal_3d.html",
+   "imagem": "_capas/produtos/natal-casinha-natal-3d.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Globo de Neve",
+   "tema": "Natal",
+   "url": "Natal/globo_de_neve.html",
+   "imagem": "_capas/produtos/natal-globo-de-neve.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Guirlanda",
+   "tema": "Natal",
+   "url": "Natal/guirlanda.html",
+   "imagem": "_capas/produtos/natal-guirlanda.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Kits Mini Natal",
+   "tema": "Natal",
+   "url": "Natal/kits_mini_natal.html",
+   "imagem": "_capas/produtos/natal-kits-mini-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Mamae Noel",
+   "tema": "Natal",
+   "url": "Natal/mamae_noel.html",
+   "imagem": "_capas/produtos/natal-mamae-noel.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Montadinhos Natal",
+   "tema": "Natal",
+   "url": "Natal/montadinhos_natal.html",
+   "imagem": "_capas/produtos/natal-montadinhos-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Paletas Natal",
+   "tema": "Natal",
+   "url": "Natal/paletas_natal.html",
+   "imagem": "_capas/produtos/natal-paletas-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Papai Noel",
+   "tema": "Natal",
+   "url": "Natal/papai_noel.html",
+   "imagem": "_capas/produtos/natal-papai-noel.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Presepios",
+   "tema": "Natal",
+   "url": "Natal/presepios.html",
+   "imagem": "_capas/produtos/natal-presepios.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Quebra Nozes",
+   "tema": "Natal",
+   "url": "Natal/quebra_nozes.html",
+   "imagem": "_capas/produtos/natal-quebra-nozes.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Renas",
+   "tema": "Natal",
+   "url": "Natal/renas.html",
+   "imagem": "_capas/produtos/natal-renas.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Sagrada Familia",
+   "tema": "Natal",
+   "url": "Natal/sagrada_familia.html",
+   "imagem": "_capas/produtos/natal-sagrada-familia.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Tags Natal",
+   "tema": "Natal",
+   "url": "Natal/tags_natal.html",
+   "imagem": "_capas/produtos/natal-tags-natal.jpg",
+   "palavras": []
+  }
+ ]
+}
