@@ -1,0 +1,58 @@
+{
+  "logo": "_capas/logo.png",
+  "themes": [
+    {
+      "name": "Dia das Mães",
+      "folder": "Dia das Mães",
+      "cover": "_capas/capa-dia-das-maes.png",
+      "subimgs": {
+        "Dia das Mães.html": "Dia das Mães/_capas/dia-das-maes.png"
+      }
+    },
+    {
+      "name": "Páscoa",
+      "folder": "Páscoa",
+      "cover": "_capas/capa-pascoa.png",
+      "subimgs": {
+        "Cenouras.html": "Páscoa/_capas/cenouras.png",
+        "Coelhos.html": "Páscoa/_capas/coelhos.png",
+        "Jogos e Quadradinhos.html": "Páscoa/_capas/jogos-e-quadradinhos.png",
+        "Kits.html": "Páscoa/_capas/kits.png",
+        "Outros.html": "Páscoa/_capas/outros.png",
+        "Ovos.html": "Páscoa/_capas/ovos.png",
+        "Paletas e Palitinhos.html": "Páscoa/_capas/paletas-e-palitinhos.png",
+        "Pintinhos.html": "Páscoa/_capas/pintinhos.png",
+        "Religioso.html": "Páscoa/_capas/religioso.png",
+        "Tags e Frases.html": "Páscoa/_capas/tags-e-frases.png"
+      }
+    },
+    {
+      "name": "Natal",
+      "folder": "Natal",
+      "cover": "_capas/capa-natal.png",
+      "subimgs": {
+        "arvore_de_natal.html": "Natal/_capas/arvore-de-natal.png",
+        "bengala_de_natal.html": "Natal/_capas/bengala-de-natal.png",
+        "boneco_de_gengibre.html": "Natal/_capas/boneco-de-gengibre.png",
+        "boneco_de_neve.html": "Natal/_capas/boneco-de-neve.png",
+        "casinha_natal.html": "Natal/_capas/casinha-natal.png",
+        "casinha_natal_3d.html": "Natal/_capas/casinha-natal-3d.png",
+        "globo_de_neve.html": "Natal/_capas/globo-de-neve.png",
+        "guirlanda.html": "Natal/_capas/guirlanda.png",
+        "kits_mini_natal.html": "Natal/_capas/kits-mini-natal.png",
+        "mamae_noel.html": "Natal/_capas/mamae-noel.png",
+        "montadinhos_natal.html": "Natal/_capas/montadinhos-natal.png",
+        "paletas_natal.html": "Natal/_capas/paletas-natal.png",
+        "papai_noel.html": "Natal/_capas/papai-noel.png",
+        "presepios.html": "Natal/_capas/presepios.png",
+        "quebra_nozes.html": "Natal/_capas/quebra-nozes.png",
+        "renas.html": "Natal/_capas/renas.png",
+        "sagrada_familia.html": "Natal/_capas/sagrada-familia.png",
+        "tags_natal.html": "Natal/_capas/tags-natal.png"
+      },
+      "titles": {
+        "casinha_natal_3d.html": "Casinha Natal 3D"
+      }
+    }
+  ]
+}

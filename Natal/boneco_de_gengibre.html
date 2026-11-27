@@ -1228,5 +1228,26 @@ Se não conseguir, toque em <b>"Pedir este pelo WhatsApp"</b> embaixo do modelo 
 </div>
 </div>
 <div id="toast"></div>
-<!--VOLTAR-MAIN--><div style="position:fixed;top:10px;left:10px;z-index:99999;display:flex;gap:6px;font-family:Segoe UI,Arial,sans-serif"><a href="../index-main.html" style="background:#c1121f;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">🏠 Temas</a><a href="index-natal.html" style="background:#2e7d32;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">↩ Natal</a></div><!--/VOLTAR-MAIN--></body>
+<!--VOLTAR-MAIN--><div style="position:fixed;top:10px;left:10px;z-index:99999;display:flex;gap:6px;font-family:Segoe UI,Arial,sans-serif"><a href="../index-main.html" style="background:#c1121f;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">🏠 Temas</a><a href="index-natal.html" style="background:#2e7d32;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">↩ Natal</a></div><!--/VOLTAR-MAIN--><!--PEDIDO-CHAT--><script>
+(function () {
+  if (typeof sel === "undefined" || typeof TEMA === "undefined") return;
+  window.enviar = function () {
+    if (!sel.length) return;
+    var campo = document.getElementById("cliente");
+    var nome = campo ? campo.value.trim() : "";
+    try { localStorage.setItem("cliente_nome", nome); } catch (e) {}
+    var msg = "\uD83D\uDED2 Pedido do catálogo\nTema: " + TEMA + "\n" +
+      sel.map(function (n, i) { return (i + 1) + ". " + n; }).join("\n");
+    window.location.href = "https://kellencortadores.github.io/chat/cliente.html" + "#pedido=" + encodeURIComponent(msg) +
+      "&nome=" + encodeURIComponent(nome);
+  };
+  var botao = document.getElementById("btn-enviar");
+  if (botao) botao.textContent = "Enviar pedido no chat";
+  var passos = document.querySelectorAll(".passo > div");
+  if (passos.length >= 3) {
+    passos[1].innerHTML = 'Quando terminar de escolher todos, toque no botão verde <b>"Enviar pedido no chat"</b> lá embaixo.';
+    passos[2].innerHTML = 'O chat da loja vai abrir com a <b>lista dos modelos</b> que você marcou. Confira e toque em <b>"Enviar pedido"</b>.';
+  }
+})();
+</script><!--/PEDIDO-CHAT--></body>
 </html>
