@@ -18,6 +18,7 @@ Estrutura esperada (a raiz é a pasta "Catálogo"):
 Uso: python gerador_indices_catalogo.py
 """
 import base64
+from datetime import datetime
 import json
 import os
 import re
@@ -33,12 +34,16 @@ from tkinter import ttk, filedialog, messagebox, simpledialog
 # ----------------------------------------------------------------- config
 CFG_FILE = Path(__file__).with_name("gerador_indices_catalogo.cfg.json")
 CATALOG_FILE = "catalog.json"
+PRODUTOS_FILE = "produtos.json"   # lido pelo chat/painel (busca de produtos)
 MAIN_NAME = "index-main.html"
 INDEX_PATTERN = "index-{slug}.html"   # troque para "index.html" se preferir
 ASSETS = "_capas"
 # Endereço público do catálogo (com / no final). Serve para a prévia no WhatsApp.
 # Se deixar vazio, as páginas saem sem a prévia com imagem.
 SITE_URL = "https://kellencortadores.github.io/catalogo/"
+# Chat que recebe os pedidos. Se deixar vazio e gerar de novo, volta para o WhatsApp.
+CHAT_URL = "https://kellencortadores.github.io/chat/cliente.html"
+CHAT_A, CHAT_B = "<!--PEDIDO-CHAT-->", "<!--/PEDIDO-CHAT-->"
 SHARE_NAME = "compartilhar"   # imagem gerada para a prévia (ex.: compartilhar.jpg)
 MARK_A, MARK_B = "<!--VOLTAR-MAIN-->", "<!--/VOLTAR-MAIN-->"
 IMG_TYPES = [("Imagens", "*.png *.jpg *.jpeg *.webp *.gif"), ("Todos", "*.*")]
@@ -149,6 +154,28 @@ def make_share_image(src, dest_dir, bg_hex, banner=False, name=None):
         else:
             dest = dest_dir / ((name or SHARE_NAME) + Path(src).suffix.lower())
             shutil.copy2(src, dest)
+        return dest
+    except Exception:
+        return None
+
+
+def make_thumb(src, dest, side=400):
+    """Miniatura JPG da capa (para o produtos.json). Sem Pillow, copia a original."""
+    dest = Path(dest)
+    try:
+        from PIL import Image
+        with Image.open(src) as im:
+            im = im.convert("RGBA")
+            im.thumbnail((side, side))
+            base = Image.new("RGB", im.size, "white")
+            base.paste(im, mask=im.split()[3])
+            base.save(dest, "JPEG", quality=80)
+            return dest
+    except Exception:
+        pass
+    try:
+        dest = dest.with_suffix(Path(src).suffix.lower())
+        shutil.copy2(src, dest)
         return dest
     except Exception:
         return None
@@ -553,6 +580,43 @@ def inject_back_button(html_file, main_href, index_href, theme_name, pal=None):
 OG_A, OG_B = "<!--OG-PREVIA-->", "<!--/OG-PREVIA-->"
 
 
+# Troca o envio pelo WhatsApp das subpáginas por envio para o chat.
+CHAT_JS = r"""<script>
+(function () {
+  if (typeof sel === "undefined" || typeof TEMA === "undefined") return;
+  window.enviar = function () {
+    if (!sel.length) return;
+    var campo = document.getElementById("cliente");
+    var nome = campo ? campo.value.trim() : "";
+    try { localStorage.setItem("cliente_nome", nome); } catch (e) {}
+    var msg = "\uD83D\uDED2 Pedido do catálogo\nTema: " + TEMA + "\n" +
+      sel.map(function (n, i) { return (i + 1) + ". " + n; }).join("\n");
+    window.location.href = CHAT + "#pedido=" + encodeURIComponent(msg) +
+      "&nome=" + encodeURIComponent(nome);
+  };
+  var botao = document.getElementById("btn-enviar");
+  if (botao) botao.textContent = "Enviar pedido no chat";
+  var passos = document.querySelectorAll(".passo > div");
+  if (passos.length >= 3) {
+    passos[1].innerHTML = 'Quando terminar de escolher todos, toque no botão verde <b>"Enviar pedido no chat"</b> lá embaixo.';
+    passos[2].innerHTML = 'O chat da loja vai abrir com a <b>lista dos modelos</b> que você marcou. Confira e toque em <b>"Enviar pedido"</b>.';
+  }
+})();
+</script>"""
+
+
+def inject_chat(html_file):
+    """Faz o botão de pedido da subpágina abrir o chat em vez do WhatsApp."""
+    txt, enc = read_text(html_file)
+    txt = re.sub(re.escape(CHAT_A) + r".*?" + re.escape(CHAT_B), "", txt, flags=re.S)
+    if not CHAT_URL or "function enviar()" not in txt:
+        return
+    block = CHAT_A + CHAT_JS.replace("CHAT +", json.dumps(CHAT_URL) + " +") + CHAT_B
+    idx = txt.lower().rfind("</body>")
+    txt = txt[:idx] + block + txt[idx:] if idx >= 0 else txt + block
+    Path(html_file).write_text(txt, encoding=enc)
+
+
 def inject_og(html_file, og):
     """Coloca as meta tags de prévia (WhatsApp etc.) no <head> da subpágina."""
     txt, enc = read_text(html_file)
@@ -693,10 +757,32 @@ class Catalog:
             for p in pages:
                 inject_back_button(p, url(p.parent, self.root / MAIN_NAME),
                                    quote(out.name), t["name"], pal)
+                inject_chat(p)
                 og = self.og_for_sub(t, p, pal)
                 if og:
                     inject_og(p, og)
         return out, len(pages)
+
+    def export_produtos(self):
+        """produtos.json na raiz: um item por subpágina (lido pelo chat e pelo painel)."""
+        pasta = self.root / ASSETS / "produtos"
+        pasta.mkdir(parents=True, exist_ok=True)
+        itens = []
+        for t in self.data["themes"]:
+            for p in scan_subpages(self.theme_folder(t)):
+                capa = self.sub_cover(t, p)
+                img = ""
+                if capa:
+                    d = make_thumb(capa, pasta / (slugify(t["name"]) + "-" + slugify(p.stem) + ".jpg"))
+                    img = url(self.root, d) if d else ""
+                extras = t.get("keywords", {}).get(p.name, "")
+                itens.append({"titulo": self.sub_title(t, p), "tema": t["name"],
+                              "url": url(self.root, p), "imagem": img,
+                              "palavras": [w.strip() for w in re.split(r"[,;]", extras) if w.strip()]})
+        (self.root / PRODUTOS_FILE).write_text(
+            json.dumps({"atualizado": datetime.now().isoformat(timespec="seconds"), "produtos": itens},
+                       ensure_ascii=False, indent=1), encoding="utf-8")
+        return len(itens)
 
     def export_main(self):
         cards = []
@@ -837,6 +923,7 @@ class App(tk.Tk):
         ttk.Button(rb, text="Editar título...", command=self.edit_sub_title).pack(side="left")
         ttk.Button(rb, text="Imagem do subtema...", command=self.pick_sub_image).pack(side="left", padx=6)
         ttk.Button(rb, text="Voltar para automática", command=self.clear_sub_image).pack(side="left", padx=6)
+        ttk.Button(rb, text="Palavras-chave...", command=self.edit_sub_keywords).pack(side="left", padx=6)
         ttk.Button(rb, text="Reescanear pasta", command=self.refresh_subs).pack(side="left")
 
         bot = ttk.Frame(self, padding=8)
@@ -997,6 +1084,19 @@ class App(tk.Tk):
             self.cat.save()
             self.refresh_subs()
 
+    def edit_sub_keywords(self):
+        t, sel = self.current(), self.tv.selection()
+        if not (t and sel):
+            return
+        atual = t.get("keywords", {}).get(sel[0], "")
+        v = simpledialog.askstring("Palavras-chave",
+                                   "Palavras que a cliente pode digitar (separe por vírgula).\nEx.: espaço, foguete, astronauta",
+                                   initialvalue=atual, parent=self)
+        if v is None:
+            return
+        t.setdefault("keywords", {})[sel[0]] = v.strip()
+        self.cat.save()
+
     def clear_sub_image(self):
         t, sel = self.current(), self.tv.selection()
         if t and sel:
@@ -1018,6 +1118,7 @@ class App(tk.Tk):
                 lines.append(f"{t['name']}: {out.name} ({n} subtemas, visual {match_theme(t['name'])['label']})")
             main = self.cat.export_main()
             lines.append(f"Main: {main.name}")
+            lines.append(f"produtos.json: {self.cat.export_produtos()} produtos")
         except Exception as e:
             messagebox.showerror("Erro ao exportar", str(e))
             return
