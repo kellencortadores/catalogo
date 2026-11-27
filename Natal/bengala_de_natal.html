@@ -55,7 +55,7 @@ html:not(.js) #barra { display:none; }
 #toast.show { opacity:0.95; }
 </style>
 <script>
-const ZAP = "5512988548845";
+const CHAT = "https://kellencortadores.github.io/chat/cliente.html";
 const TEMA = "Bengala De Natal";
 const CHAVE = "pedido_" + TEMA;
 let sel = [];
@@ -145,10 +145,10 @@ function enviar() {
   if (!sel.length) return;
   const nomeCliente = el("cliente").value.trim();
   try { localStorage.setItem("cliente_nome", nomeCliente); } catch (e) {}
-  const msg = "Olá! " + (nomeCliente ? "Meu nome é " + nomeCliente + ". " : "") +
-    "Tenho interesse nestes modelos do tema " + TEMA + ":\n" +
+  const msg = "\uD83D\uDED2 Pedido do catálogo\nTema: " + TEMA + "\n" +
     sel.map(function (n, i) { return (i + 1) + ". " + n; }).join("\n");
-  window.location.href = "https://wa.me/" + ZAP + "?text=" + encodeURIComponent(msg);
+  window.location.href = CHAT + "#pedido=" + encodeURIComponent(msg) +
+    "&nome=" + encodeURIComponent(nomeCliente);
 }
 
 window.addEventListener("load", function () {
@@ -165,15 +165,15 @@ window.addEventListener("load", function () {
   atualizar();
 });
 </script>
-<!--OG-PREVIA--><meta property="og:type" content="website"><meta property="og:title" content="Bengala de Natal - Catálogo Kellen Cortadores"><meta property="og:description" content="Modelos de cortadores de Bengala de Natal. Toque para ver!"><meta property="og:url" content="https://kellencortadores.github.io/catalogo/Natal/bengala_de_natal.html"><meta property="og:image" content="https://kellencortadores.github.io/catalogo/Natal/bengala_de_natal-compartilhar.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><!--/OG-PREVIA--></head>
+</head>
 <body>
 <h1>Bengala De Natal</h1>
 
 <div class="passos">
 <div class="passos-titulo">Como fazer seu pedido</div>
 <div class="passo"><span class="num">1</span><div><b>Toque nas fotos</b> dos modelos que você quer. Ao tocar, a foto fica <b class="verde">verdinha com ✔</b>. <b>Pode escolher quantos quiser!</b> (Tocou sem querer? É só tocar de novo para desmarcar.)</div></div>
-<div class="passo"><span class="num">2</span><div>Quando terminar de escolher todos, toque no botão verde <b>"Enviar pedido no WhatsApp"</b> lá embaixo.</div></div>
-<div class="passo"><span class="num">3</span><div>O WhatsApp vai abrir com uma <b>mensagem de texto já pronta</b>, com o nome dos modelos que você marcou. É só apertar <b>enviar</b>!</div></div>
+<div class="passo"><span class="num">2</span><div>Quando terminar de escolher todos, toque no botão verde <b>"Enviar pedido no chat"</b> lá embaixo.</div></div>
+<div class="passo"><span class="num">3</span><div>O chat da loja vai abrir com a <b>lista dos modelos</b> que você marcou. Confira e toque em <b>"Enviar pedido"</b>.</div></div>
 <div class="aviso-foto">
 <b>📷 Atenção: as fotos NÃO são enviadas!</b><br>
 As fotos estão aqui só para você <b>ver e escolher</b> o modelo. O que chega para o Leandro é apenas o <b>texto</b> com o nome dos modelos que você marcou, e é com ele que ele encontra o seu pedido rapidinho.
@@ -315,30 +315,9 @@ Se não conseguir, toque em <b>"Pedir este pelo WhatsApp"</b> embaixo do modelo 
 <div class="botoes">
 <button id="btn-lista" onclick="alternarLista()">Ver lista</button>
 <button id="btn-limpar" onclick="limpar()">Limpar</button>
-<button id="btn-enviar" onclick="enviar()">Enviar pedido no WhatsApp</button>
+<button id="btn-enviar" onclick="enviar()">Enviar pedido no chat</button>
 </div>
 </div>
 <div id="toast"></div>
-<!--VOLTAR-MAIN--><div style="position:fixed;top:10px;left:10px;z-index:99999;display:flex;gap:6px;font-family:Segoe UI,Arial,sans-serif"><a href="../index-main.html" style="background:#c1121f;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">🏠 Temas</a><a href="index-natal.html" style="background:#2e7d32;color:#fff;text-decoration:none;font-weight:700;padding:9px 14px;border-radius:30px;box-shadow:0 2px 8px rgba(0,0,0,.3)">↩ Natal</a></div><!--/VOLTAR-MAIN--><!--PEDIDO-CHAT--><script>
-(function () {
-  if (typeof sel === "undefined" || typeof TEMA === "undefined") return;
-  window.enviar = function () {
-    if (!sel.length) return;
-    var campo = document.getElementById("cliente");
-    var nome = campo ? campo.value.trim() : "";
-    try { localStorage.setItem("cliente_nome", nome); } catch (e) {}
-    var msg = "\uD83D\uDED2 Pedido do catálogo\nTema: " + TEMA + "\n" +
-      sel.map(function (n, i) { return (i + 1) + ". " + n; }).join("\n");
-    window.location.href = "https://kellencortadores.github.io/chat/cliente.html" + "#pedido=" + encodeURIComponent(msg) +
-      "&nome=" + encodeURIComponent(nome);
-  };
-  var botao = document.getElementById("btn-enviar");
-  if (botao) botao.textContent = "Enviar pedido no chat";
-  var passos = document.querySelectorAll(".passo > div");
-  if (passos.length >= 3) {
-    passos[1].innerHTML = 'Quando terminar de escolher todos, toque no botão verde <b>"Enviar pedido no chat"</b> lá embaixo.';
-    passos[2].innerHTML = 'O chat da loja vai abrir com a <b>lista dos modelos</b> que você marcou. Confira e toque em <b>"Enviar pedido"</b>.';
-  }
-})();
-</script><!--/PEDIDO-CHAT--></body>
+</body>
 </html>
