@@ -53,6 +53,12 @@
       "titles": {
         "casinha_natal_3d.html": "Casinha Natal 3D"
       }
+    },
+    {
+      "name": "Animais",
+      "folder": "Animais",
+      "cover": "_capas/capa-animais.png",
+      "subimgs": {}
     }
   ]
 }

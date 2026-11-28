@@ -1,5 +1,5 @@
 {
- "atualizado": "2026-11-27T18:42:35",
+ "atualizado": "2026-11-27T21:54:40",
  "produtos": [
   {
    "titulo": "Dia das Mães",
@@ -202,6 +202,13 @@
    "tema": "Natal",
    "url": "Natal/tags_natal.html",
    "imagem": "_capas/produtos/natal-tags-natal.jpg",
+   "palavras": []
+  },
+  {
+   "titulo": "Capivara",
+   "tema": "Animais",
+   "url": "Animais/capivara.html",
+   "imagem": "",
    "palavras": []
   }
  ]
